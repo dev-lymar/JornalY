@@ -5,7 +5,21 @@
 {% endblock %}
 
 {% block content %}
-  <div class="container py-5">
-    {{ text }}
+  <div class="container">
+    <p>Group {{ group.title }}.</p>
+    {% for post in posts %}
+    <article>
+      <ul>
+        <li>
+          Author: {{ post.author.get_full_name }}
+        </li>
+        <li>
+          Publication date: {{ post.pub_date|date:"d E Y" }}
+        </li>
+      </ul>
+    <p>{{ post.text }}</p>
+    </article>
+    <hr>
+    {% endfor %}
   </div>
 {% endblock %}
