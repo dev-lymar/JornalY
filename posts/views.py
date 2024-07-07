@@ -3,12 +3,11 @@ from django.http import HttpResponse
 
 
 def index(request):
-    return HttpResponse('Главная страница')
+    template = 'posts/index.html'
+    return render(request, template)
 
 
-def group_posts(request):
-    return HttpResponse('Посты')
+def group_posts(request, slug):
+    template = 'posts/group_list.html'
+    return render(request, template)
 
-
-def group_detail(request, slug):
-    return HttpResponse(f'Пост - {slug}')
