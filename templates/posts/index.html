@@ -1,30 +1,32 @@
 {% extends 'base.html' %}
 
 {% block title %}
-  Homepage
+  {{ title }}
 {% endblock %}
 
 {% block content %}
-  <div class="container">
-    <h1>Latest updates on the website</h1>
-    <br>
-    {% for post in posts %}
-      <ul>
-        <li>
-          Author: {{ post.author.get_full_name }}
-        </li>
-        <li>
-          Publication date: {{ post.pub_date|date:"d E Y" }}
-        </li>
-      </ul>
-    <p>{{ post.text }}</p>
-    {% if post.group %}
-      <a href="{% url 'posts:group' slug=post.group.slug %}">All group posts</a>
-    {% else %}
-      <p>No group assigned</p>
-    {% endif %}
+  <main>
+    <div class="container">
+      <h1>Latest updates on the website</h1>
+        <br>
+        {% for post in posts %}
+          <ul>
+            <li>
+              Author: {{ post.author.get_full_name }}
+            </li>
+            <li>
+              Publication date: {{ post.pub_date|date:"d E Y" }}
+            </li>
+          </ul>
+        <p>{{ post.text }}</p>
+          {% if post.group %}
+            <a href="{% url 'posts:group_list' slug=post.group.slug %}">All group posts</a>
+          {% else %}
+            <p>No group assigned</p>
+          {% endif %}
 
-    {% if not forloop.last %}<hr>{% endif %}
-    {% endfor %}
-  </div>
+          {% if not forloop.last %}<hr>{% endif %}
+        {% endfor %}
+    </div>
+  </main>
 {% endblock %}

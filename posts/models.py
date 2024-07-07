@@ -9,6 +9,9 @@ class Group(models.Model):
     slug = models.SlugField(max_length=50, unique=True)
     description = models.TextField()
 
+    def __str__(self):
+        return self.title
+
 
 class Post(models.Model):
     text = models.TextField()
