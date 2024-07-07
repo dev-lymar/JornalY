@@ -4,9 +4,13 @@ from .models import Post, Group
 
 
 def index(request):
-    posts = Post.objects.order_by('-pub_date')[:10]
+    keyword = request.GET.get('q', None)
+    if keyword:
+        posts = Post.objects.filter(text__contains=keyword).select_related('author').select_related('group')
+    else:
+        posts = None
     context = {
-        'title': 'Latest updates on the site',
+        'title': 'Search by post',
         'posts': posts,
     }
     return render(request, 'posts/index.html', context=context)
