@@ -53,6 +53,12 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'jornaly.urls'
 
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
 TEMPLATES_DIRS = os.path.join(BASE_DIR, 'templates')
 
 TEMPLATES = [
