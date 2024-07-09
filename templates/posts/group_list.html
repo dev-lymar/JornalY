@@ -1,25 +1,30 @@
 {% extends 'base.html' %}
 
 {% block title %}
-  Group info
+  {{ title }}
 {% endblock %}
 
 {% block content %}
-  <div class="container">
-    <p>Group {{ group.title }}.</p>
-    {% for post in posts %}
-    <article>
-      <ul>
-        <li>
-          Author: {{ post.author.get_full_name }}
-        </li>
-        <li>
-          Publication date: {{ post.pub_date|date:"d E Y" }}
-        </li>
-      </ul>
-    <p>{{ post.text }}</p>
-    </article>
-    <hr>
-    {% endfor %}
-  </div>
+  <main>
+    <div class="container">
+      <h1>{{ title }}</h1>
+        <p> {{ group.description }}</p>
+          {% for post in page_obj %}
+            <article>
+              <ul>
+                <li>
+                  Author: {{ post.author.get_full_name }}
+                </li>
+                <li>
+                  Publication date: {{ post.pub_date|date:"d E Y" }}
+                </li>
+              </ul>
+            <p>{{ post.text }}</p>
+            </article>
+          <hr>
+          {% endfor %}
+
+      {% include 'includes/paginator.html' %}
+    </div>
+  </main>
 {% endblock %}

@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'posts',
+    'users',
+    'core',
 ]
 
 MIDDLEWARE = [
@@ -53,12 +55,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'jornaly.urls'
 
-STATIC_URL = '/static/'
-
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
-
 TEMPLATES_DIRS = os.path.join(BASE_DIR, 'templates')
 
 TEMPLATES = [
@@ -72,6 +68,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'core.context_processors.year.year',
             ],
         },
     },
@@ -127,7 +124,15 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = 'users:login'
+LOGIN_REDIRECT_URL = 'posts:home'
+LOGOUT_REDIRECT_URL = 'posts:home'
