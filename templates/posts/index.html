@@ -20,8 +20,6 @@
     <p>{{ post.text }}</p>
     {% if post.group %}
       <a href="{% url 'posts:group_list' slug=post.group.slug %}">All group posts</a>
-    {% else %}
-      <p>No group assigned</p>
     {% endif %}
 
     {% if not forloop.last %}<hr>{% endif %}
