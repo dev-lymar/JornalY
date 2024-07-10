@@ -17,7 +17,7 @@
         <a class="nav-link {% if request.resolver_match.url_name == '#' %}active{% endif %}" href="#">New post</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link link-light {% if request.resolver_match.url_name == 'users:password_reset' %}active{% endif %}" href="{% url 'users:password_reset' %}">Change password</a>
+        <a class="nav-link link-light {% if request.resolver_match.url_name == 'users:password_reset' %}active{% endif %}" href="{% url 'users:password_change_form' %}">Change password</a>
       </li>
       <li class="nav-item">
           <form action="{% url 'users:logout' %}" method="post" style="display:inline;">
