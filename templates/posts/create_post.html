@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  {% if is_edit %}Edit post{% else %}New post{% endif %}
+{% endblock %}
+
+{% block content %}
+<main>
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8 p-5">
+        <div class="card">
+          <div class="card-header">
+            {% if is_edit %}Edit post{% else %}New post{% endif %}
+          </div>
+          <div class="card-body">
+            <form method="post">
+              {% csrf_token %}
+              <div class="form-group row my-3 p-3">
+                <label for="{{ form.text.id_for_label }}">
+                  Post text:
+                  <span class="required text-danger">*</span>
+                </label>
+                {{ form.text }}
+                <small id="id_text-help" class="form-text text-muted">
+                  Text new post
+                </small>
+              </div>
+              <div class="form-group row my-3 p-3">
+                <label for="{{ form.group.id_for_label }}">
+                  Group:
+                </label>
+                {{ form.group }}
+                <small id="{{ form.group.id_for_label }}-help" class="form-text text-muted">
+                  Группа, к которой будет относиться запись
+                </small>
+              </div>
+              <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary">
+                  {% if is_edit %}Save{% else %}Add{% endif %}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}
