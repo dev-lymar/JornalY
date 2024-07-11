@@ -166,3 +166,6 @@ cython_debug/
 
 # MacOS
 .DS_Store
+
+# Emails
+sent_emails/
