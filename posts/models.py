@@ -20,4 +20,4 @@ class Post(models.Model):
     group = models.ForeignKey(Group, on_delete=models.DO_NOTHING, blank=True, null=True)
 
     def __str__(self):
-        return self.text
+        return self.text[:15]
