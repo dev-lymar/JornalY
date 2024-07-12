@@ -83,7 +83,7 @@ class PostEditView(UpdateView):
     def dispatch(self, request, *args, **kwargs):
         post = self.get_object()
         if post.author != request.user:
-            return redirect('post_detail', post_id=post.id)
+            return redirect('posts:post_detail', post_id=post.pk)
         return super().dispatch(request, *args, **kwargs)
 
 

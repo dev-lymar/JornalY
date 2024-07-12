@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load thumbnail %}
 
 {% block title %}
   Post {{ post.text|slice:":30" }}
@@ -6,38 +7,44 @@
 
 {% block content %}
 <main>
-  <div class="row">
-    <aside class="col-12 col-md-3">
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item">
-          Date of publication: {{ post.pub_date|date:"d E Y" }}
-        </li>
-          {% if post.group %}
+  <div class="container py-5">
+    <div class="row">
+      <aside class="col-12 col-md-3">
+        <ul class="list-group list-group-flush">
           <li class="list-group-item">
-            Group: {{ post.group.title }}
-            <a href="{% url 'posts:group_list' slug=post.group.slug %}">
-          {% endif %}
-            All group posts
+            Date of publication: {{ post.pub_date|date:"d E Y" }}
+          </li>
+            {% if post.group %}
+            <li class="list-group-item">
+              Group: {{ post.group.title }}
+              <a href="{% url 'posts:group_list' slug=post.group.slug %}">
+              All group posts
+              </a>
+            {% endif %}
+            </li>
+            <li class="list-group-item">
+              Author: {{ post.author.get_full_name }}
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+            Total posts: <span>{{ count_author_posts }}</span>
+          </li>
+          <li class="list-group-item">
+            <a href="{% url 'posts:profile' post.author.username %}">
+              All user posts
             </a>
           </li>
-          <li class="list-group-item">
-            Author: {{ post.author.get_full_name }}
-          </li>
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-          Total posts: <span>{{ count_author_posts }}</span>
-        </li>
-        <li class="list-group-item">
-          <a href="{% url 'posts:profile' post.author.username %}">
-            All user posts
-          </a>
-        </li>
-      </ul>
-    </aside>
-      <article class="col-12 col-md-9">
-        <p>
-          {{ post.text }}
-        </p>
-    </article>
+        </ul>
+      </aside>
+        <article class="col-12 col-md-9">
+          {% thumbnail post.image "960x339" crop="center" upscale=True as im %}
+            <img class="card-img my-2" src="{{ im.url }}">
+          {% endthumbnail %}
+          <p>
+            {{ post.text }}
+          </p>
+          <a href="{% url 'posts:post_edit' pk=post.pk %}">Edit post</a>
+      </article>
+    </div>
   </div>
 </main>
 {% endblock %}
