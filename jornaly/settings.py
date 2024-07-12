@@ -25,7 +25,11 @@ SECRET_KEY = 'django-insecure-1n^4@e08360l=oha!890e=blm9n2ukwh97*ea+-itw&+r*d)5+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '[::1]',
+]
 
 
 # Application definition
@@ -142,3 +146,8 @@ LOGOUT_REDIRECT_URL = 'posts:home'
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
+
+
+# Custom error page
+
+CSRF_FAILURE_VIEW = 'core.views.csrf_failure'
