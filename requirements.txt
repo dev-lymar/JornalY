@@ -1,3 +1,2 @@
 coverage==7.6.0
 Django==5.0.6
-pytest==8.2.2
