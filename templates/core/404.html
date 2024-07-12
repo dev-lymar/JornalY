@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Custom 404
+{% endblock %}
+
+{% block content %}
+  <h1>Custom 404</h1>
+  <p>The page with the address {{ path }}} does not exist</p>
+  <a href="{% url 'posts:home' %}"> Go to the main page</a>
+{% endblock %} 
