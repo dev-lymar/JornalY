@@ -5,7 +5,7 @@ from .models import Post, Group
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['text', 'group']
+        fields = ('text', 'group', 'image')
         widgets = {
             'group': forms.Select(attrs={'class': 'form-control'})
         }
