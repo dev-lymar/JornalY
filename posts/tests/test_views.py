@@ -2,12 +2,12 @@ from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from posts.models import Post, Group
+from posts.models import Post, Group, Comment
 
 User = get_user_model()
 
 
-class PostPagesTests(TestCase):
+class PostViewsTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -59,3 +59,26 @@ class PostPagesTests(TestCase):
 
         response = self.authorized_client.get(reverse('posts:home') + '?page=2')
         self.assertEqual(len(response.context['page_obj']), 5)
+
+    def test_authorized_user_can_comment(self):
+        """Ensure that an authenticated user can comment on a post."""
+        comment_count_before = Comment.objects.count()
+        response = self.authorized_client.post(
+            reverse('posts:add_comment', kwargs={'post_id': self.post.id}),
+            data={'text': 'Test comment'},
+            follow=True
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Comment.objects.count(), comment_count_before + 1)
+        self.assertTrue(Comment.objects.filter(text="Test comment").exists())
+
+    def test_comment_appears_on_post_page(self):
+        """Ensure that after commenting, the comment appears on the post detail page."""
+        comment_text = 'Another test comment'
+        response = self.authorized_client.post(
+            reverse('posts:add_comment', kwargs={'post_id': self.post.id}),
+            data={'text': comment_text},
+            follow=True
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, comment_text)

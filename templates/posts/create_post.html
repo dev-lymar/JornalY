@@ -14,7 +14,7 @@
             {% if is_edit %}Edit post{% else %}New post{% endif %}
           </div>
           <div class="card-body">
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
               {% csrf_token %}
               <div class="form-group row my-3 p-3">
                 <label for="{{ form.text.id_for_label }}">
@@ -35,6 +35,12 @@
                   Группа, к которой будет относиться запись
                 </small>
               </div>
+              <div class="form-group row my-3 p-3">
+                    <label for="id_image">
+                      Image
+                    </label>
+                    <input type="file" name="image" accept="image/*" class="form-control" id="id_image">
+                  </div>
               <div class="d-flex justify-content-end">
                 <button type="submit" class="btn btn-primary">
                   {% if is_edit %}Save{% else %}Add{% endif %}
