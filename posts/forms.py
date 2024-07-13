@@ -1,5 +1,5 @@
 from django import forms
-from .models import Post, Group
+from .models import Post, Group, Comment
 
 
 class PostForm(forms.ModelForm):
@@ -11,3 +11,9 @@ class PostForm(forms.ModelForm):
         }
 
     group = forms.ModelChoiceField(queryset=Group.objects.all(), required=False, empty_label='---------')
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ('text', )
