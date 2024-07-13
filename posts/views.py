@@ -5,8 +5,8 @@ from django.views.generic import CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.shortcuts import redirect
-from .forms import PostForm
-from .models import Post, Group
+from .forms import PostForm, CommentForm
+from .models import Post, Group, Comment
 
 User = get_user_model()
 
@@ -90,12 +90,28 @@ class PostEditView(UpdateView):
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     count_author_posts = Post.objects.filter(author=post.author).count()
+    comments = Comment.objects.filter(post=post).order_by('-created')
+    form = CommentForm()
 
     context = {
         'post': post,
         'count_author_posts': count_author_posts,
+        'comments': comments,
+        'form': form,
     }
     return render(request, 'posts/post_detail.html', context=context)
+
+
+def add_comment(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    form = CommentForm(request.POST or None)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.author = request.user
+        comment.post = post
+        comment.save()
+        return redirect('posts:post_detail', post_id=post_id)
+    return render(request, 'posts/post_detail.html', {'post': post, 'form': form})
 
 
 def group_posts(request, slug):
@@ -114,4 +130,3 @@ def group_posts(request, slug):
         'page_obj': page_obj,
     }
     return render(request, 'posts/group_list.html', context=context)
-

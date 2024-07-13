@@ -21,7 +21,9 @@
               </ul>
             <p>{{ post.text }}</p>
             </article>
-          <hr>
+            {% if not forloop.last %}
+              <hr>
+            {% endif %}
           {% endfor %}
 
       {% include 'includes/paginator.html' %}
