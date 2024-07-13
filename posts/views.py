@@ -1,53 +1,47 @@
 from django.core.paginator import Paginator
 from django.contrib.auth import get_user_model
 from django.shortcuts import render, get_object_or_404
-from django.views.generic import CreateView, UpdateView
+from django.views.generic import CreateView, UpdateView, ListView, DetailView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.shortcuts import redirect
 from .forms import PostForm, CommentForm
 from .models import Post, Group, Comment
 
+
 User = get_user_model()
 
 
-def index(request):
-    post_list = Post.objects.all().order_by('-pub_date')
-    paginator = Paginator(post_list, 10)
+class IndexView(ListView):
+    model = Post
+    template_name = 'posts/index.html'
+    context_object_name = 'page_obj'
+    paginate_by = 10
 
-    page_number = request.GET.get('page')
+    def get_queryset(self):
+        return Post.objects.all().order_by('-pub_date')
 
-    page_obj = paginator.get_page(page_number)
-
-    keyword = request.GET.get('q', None)
-    if keyword:
-        posts = Post.objects.filter(text__contains=keyword).select_related('author').select_related('group')
-    else:
-        posts = None
-    context = {
-        'title': 'Search by post',
-        'page_obj': page_obj,
-        'posts': posts,
-    }
-    return render(request, 'posts/index.html', context=context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Post List'
+        return context
 
 
-def profile(request, username):
-    user = get_object_or_404(User, username=username)
+class ProfileView(ListView):
+    model = Post
+    template_name = 'posts/profile.html'
+    context_object_name = 'page_obj'
+    paginate_by = 10
 
-    post_list = Post.objects.all().filter(author=user).order_by('-pub_date')
-    count_author_posts = post_list.count()
-    paginator = Paginator(post_list, 10)
+    def get_queryset(self):
+        self.user = get_object_or_404(User, username=self.kwargs['username'])
+        return Post.objects.filter(author=self.user).order_by('-pub_date')
 
-    page_number = request.GET.get('page')
-
-    page_obj = paginator.get_page(page_number)
-    context = {
-        'user': user,
-        'page_obj': page_obj,
-        'count_author_posts': count_author_posts,
-    }
-    return render(request, 'posts/profile.html', context=context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = self.user
+        context['count_author_posts'] = self.get_queryset().count
+        return context
 
 
 class PostCreateView(CreateView):
@@ -87,46 +81,56 @@ class PostEditView(UpdateView):
         return super().dispatch(request, *args, **kwargs)
 
 
-def post_detail(request, post_id):
-    post = get_object_or_404(Post, id=post_id)
-    count_author_posts = Post.objects.filter(author=post.author).count()
-    comments = Comment.objects.filter(post=post).order_by('-created')
-    form = CommentForm()
+class PostDetailView(DetailView):
+    model = Post
+    template_name = 'posts/post_detail.html'
+    context_object_name = 'post'
 
-    context = {
-        'post': post,
-        'count_author_posts': count_author_posts,
-        'comments': comments,
-        'form': form,
-    }
-    return render(request, 'posts/post_detail.html', context=context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['count_author_posts'] = Post.objects.filter(author=self.object.author).count()
+        context['comments'] = Comment.objects.filter(post=self.object).order_by('-created')
+        context['form'] = CommentForm
+        return context
 
 
-def add_comment(request, post_id):
-    post = get_object_or_404(Post, id=post_id)
-    form = CommentForm(request.POST or None)
-    if form.is_valid():
+class AddCommentView(FormView):
+    form_class = CommentForm
+    template_name = 'posts/post_detail.html'
+
+    def form_valid(self, form):
+        post = get_object_or_404(Post, pk=self.kwargs['pk'])
         comment = form.save(commit=False)
-        comment.author = request.user
+        comment.author = self.request.user
         comment.post = post
         comment.save()
-        return redirect('posts:post_detail', post_id=post_id)
-    return render(request, 'posts/post_detail.html', {'post': post, 'form': form})
+        return redirect('posts:post_detail', pk=post.pk)
+
+    def form_invalid(self, form):
+        post = get_object_or_404(Post, pk=self.kwargs['pk'])
+        return self.render_to_response(self.get_context_data(form=form, post=post))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['post'] = get_object_or_404(Post, pk=self.kwargs['pk'])
+        context['comments'] = Comment.objects.filter(post=context['post']).order_by('-created')
+        context['count_author_posts'] = Post.objects.filter(author=context['post'].author).count()
+        context['form'] = self.get_form()
+        return context
 
 
-def group_posts(request, slug):
-    group = get_object_or_404(Group, slug=slug)
+class GroupPostsView(ListView):
+    model = Post
+    template_name = 'posts/group_list.html'
+    context_object_name = 'page_obj'
+    paginate_by = 10
 
-    post_list = Post.objects.filter(group=group).order_by('-pub_date')
-    paginator = Paginator(post_list, 10)
+    def get_queryset(self):
+        self.group = get_object_or_404(Group, slug=self.kwargs['slug'])
+        return Post.objects.filter(group=self.group).order_by('-pub_date')
 
-    page_number = request.GET.get('page')
-
-    page_obj = paginator.get_page(page_number)
-
-    context = {
-        'title': f'Community posts by {group.title}.',
-        'group': group,
-        'page_obj': page_obj,
-    }
-    return render(request, 'posts/group_list.html', context=context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = f'Community posts by {self.group.title}.'
+        context['group'] = self.group
+        return context
