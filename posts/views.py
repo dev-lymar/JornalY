@@ -7,11 +7,14 @@ from django.urls import reverse_lazy
 from django.shortcuts import redirect
 from .forms import PostForm, CommentForm
 from .models import Post, Group, Comment
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
 
 
 User = get_user_model()
 
 
+@method_decorator(cache_page(60), name='get')
 class IndexView(ListView):
     model = Post
     template_name = 'posts/index.html'
