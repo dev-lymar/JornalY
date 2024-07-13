@@ -31,6 +31,10 @@ ALLOWED_HOSTS = [
     '[::1]',
 ]
 
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
+
 
 # Application definition
 
@@ -48,6 +52,7 @@ INSTALLED_APPS = [
     'core',
 
     'sorl.thumbnail',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -58,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'jornaly.urls'
@@ -156,3 +162,15 @@ EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
 # Custom error page
 
 CSRF_FAILURE_VIEW = 'core.views.csrf_failure'
+
+# Caching
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}

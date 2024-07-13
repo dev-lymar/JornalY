@@ -1,4 +1,6 @@
 coverage==7.6.0
 Django==5.0.6
+django-debug-toolbar==4.4.6
+django-redis==5.4.0
 pillow==10.4.0
 sorl-thumbnail==12.10.0
