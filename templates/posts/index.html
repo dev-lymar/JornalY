@@ -24,7 +24,7 @@
       <img class="card-img my-2" src="{{ im.url }}">
     {% endthumbnail %}
 
-    <a href="{% url 'posts:post_detail' post_id=post.id %}">Detailed information</a>
+    <a href="{% url 'posts:post_detail' pk=post.id %}">Detailed information</a>
     {% if post.group %}
       <a href="{% url 'posts:group_list' slug=post.group.slug %}">All group posts</a>
     {% endif %}

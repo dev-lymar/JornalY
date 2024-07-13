@@ -24,7 +24,7 @@
                 <img class="card-img my-2" src="{{ im.url }}">
               {% endthumbnail %}
             <p>{{ post.text }}</p>
-              <a href="{% url 'posts:post_detail' post_id=post.id %}">Detailed information</a>
+              <a href="{% url 'posts:post_detail' pk=post.id %}">Detailed information</a>
             </article>
             {% if not forloop.last %}
               <hr>
