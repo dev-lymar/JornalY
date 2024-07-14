@@ -1,14 +1,14 @@
-from django.core.paginator import Paginator
 from django.contrib.auth import get_user_model
-from django.shortcuts import render, get_object_or_404
-from django.views.generic import CreateView, UpdateView, ListView, DetailView, FormView
+from django.shortcuts import get_object_or_404
+from django.views.generic import CreateView, UpdateView, ListView, DetailView, FormView, RedirectView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.shortcuts import redirect
 from .forms import PostForm, CommentForm
-from .models import Post, Group, Comment
+from .models import Post, Group, Comment, Follow
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
+from django.contrib.auth.models import AnonymousUser
 
 
 User = get_user_model()
@@ -29,23 +29,55 @@ class IndexView(ListView):
         return context
 
 
+class FollowIndexView(ListView, LoginRequiredMixin):
+    model = Follow
+    template_name = 'posts/follow.html'
+    paginate_by = 10
+
+    def get_queryset(self):
+        return Post.objects.filter(author__following__user=self.request.user).order_by('-pub_date')
+
+
+class ProfileFollowView(LoginRequiredMixin, RedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        username = self.kwargs.get('username')
+        user_to_follow = get_object_or_404(User, username=username)
+        if user_to_follow != self.request.user:
+            Follow.objects.get_or_create(user=self.request.user, author=user_to_follow)
+        return reverse_lazy('posts:profile', kwargs={'username': username})
+
+
+class ProfileUnfollowView(LoginRequiredMixin, RedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        username = self.kwargs.get('username')
+        user_to_unfollow = get_object_or_404(User, username=username)
+        Follow.objects.filter(user=self.request.user, author=user_to_unfollow).delete()
+        return reverse_lazy('posts:profile', kwargs={'username': username})
+
+
 class ProfileView(ListView):
     model = Post
     template_name = 'posts/profile.html'
     paginate_by = 10
+    context_object_name = 'page_obj'
 
     def get_queryset(self):
-        self.user = get_object_or_404(User, username=self.kwargs['username'])
-        return Post.objects.filter(author=self.user).order_by('-pub_date')
+        self.author = get_object_or_404(User, username=self.kwargs['username'])
+        return Post.objects.filter(author=self.author).order_by('-pub_date')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['user'] = self.user
-        context['count_author_posts'] = self.get_queryset().count
+        user = self.request.user
+        context['author'] = self.author
+        context['count_author_posts'] = self.get_queryset().count()
+        if isinstance(user, AnonymousUser):
+            context['following'] = False
+        else:
+            context['following'] = Follow.objects.filter(user=user, author=self.author).exists()
         return context
 
 
-class PostCreateView(CreateView):
+class PostCreateView(LoginRequiredMixin, CreateView):
     form_class = PostForm
     template_name = 'posts/create_post.html'
 
@@ -62,7 +94,7 @@ class PostCreateView(CreateView):
         return context
 
 
-class PostEditView(UpdateView):
+class PostEditView(LoginRequiredMixin, UpdateView):
     model = Post
     form_class = PostForm
     template_name = 'posts/create_post.html'
@@ -95,7 +127,7 @@ class PostDetailView(DetailView):
         return context
 
 
-class AddCommentView(FormView):
+class AddCommentView(LoginRequiredMixin, FormView):
     form_class = CommentForm
     template_name = 'posts/post_detail.html'
 
