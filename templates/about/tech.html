@@ -3,20 +3,47 @@
 {% block title %}Tech{% endblock %}
 
 {% block content %}
-<div class="row">
-  <h1>The technologies used:</h1>
-  <aside class="col-12 col-md-3">
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item">
-        Python - 3.12
-      </li>
-      <li class="list-group-item">
-        Django - 5.0.6
-      </li>
-    </ul>
-  </aside>
-  <article class="col-12 col-md-9">
-    <p>The project was created to improve Django skills</p>
-  </article>
+<div class="container">
+  <div class="row">
+    <p>
+      <h1>The technologies used:</h1>
+    </p>
+    <aside class="col-12 col-md-3">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+          Python - 3.12
+        </li>
+        <li class="list-group-item">
+          Django - 5.0.6
+        </li>
+        <li class="list-group-item">
+          Django-redis - 5.4.0
+        </li>
+        <li class="list-group-item">
+          Django-debug-toolbar - 4.4.6
+        </li>
+        <li class="list-group-item">
+          Sorl-thumbnail - 12.10.0
+        </li>
+      </ul>
+    </aside>
+    <article class="col-12 col-md-9">
+      <p>
+        <h4>The project was created to improve Django skills</h4>
+        <hr>
+        <b><i>The project was created on Django 5 framework as part of a web development course.
+        The project is implemented:</i></b>
+        <p>
+          <ul>
+            <li>User creation, changing password for user and password recovery by email, user profile page with all his posts</li>
+            <li>Creation of posts with the ability to attach images</li>
+            <li>The author can change the content of his post</li>
+            <li>Ability to subscribe and unsubscribe to selected authors</li>
+            <li>Adding comments to posts</li>
+          </ul>
+        </p>
+      </p>
+    </article>
+  </div>
 </div>
-{% endblock %} 
+{% endblock %}
