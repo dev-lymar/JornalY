@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import AboutTechView, AboutAuthorView
+
+from .views import AboutAuthorView, AboutTechView
 
 app_name = 'about'
 

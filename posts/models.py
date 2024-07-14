@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.db import models
 
 User = get_user_model()
 
@@ -38,3 +38,11 @@ class Comment(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments', verbose_name='Author')
     text = models.TextField('Comment', help_text='Enter the comment of the post')
     created = models.DateField('Created', auto_now_add=True)
+
+
+class Follow(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='follower', verbose_name='user')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following', verbose_name='author')
+
+    class Meta:
+        unique_together = ('user', 'author')

@@ -2,13 +2,13 @@
 {% load thumbnail %}
 
 {% block title %}
-  {{ title }}
+  Follow
 {% endblock %}
 
 {% block content %}
   <div class="container">
     {% include 'posts/includes/switcher.html' %}
-    <h1>Latest updates on the website</h1>
+    <h1>Your subscriptions</h1>
     <br>
     {% for post in page_obj %}
       <ul>
