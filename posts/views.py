@@ -18,7 +18,6 @@ User = get_user_model()
 class IndexView(ListView):
     model = Post
     template_name = 'posts/index.html'
-    context_object_name = 'page_obj'
     paginate_by = 10
 
     def get_queryset(self):
@@ -33,7 +32,6 @@ class IndexView(ListView):
 class ProfileView(ListView):
     model = Post
     template_name = 'posts/profile.html'
-    context_object_name = 'page_obj'
     paginate_by = 10
 
     def get_queryset(self):
@@ -125,7 +123,6 @@ class AddCommentView(FormView):
 class GroupPostsView(ListView):
     model = Post
     template_name = 'posts/group_list.html'
-    context_object_name = 'page_obj'
     paginate_by = 10
 
     def get_queryset(self):
