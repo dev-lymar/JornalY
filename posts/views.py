@@ -1,15 +1,15 @@
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
-from django.views.generic import CreateView, UpdateView, ListView, DetailView, FormView, RedirectView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
-from django.shortcuts import redirect
-from .forms import PostForm, CommentForm
-from .models import Post, Group, Comment, Follow
-from django.views.decorators.cache import cache_page
-from django.utils.decorators import method_decorator
 from django.contrib.auth.models import AnonymousUser
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.generic import (CreateView, DetailView, FormView, ListView,
+                                  RedirectView, UpdateView)
 
+from .forms import CommentForm, PostForm
+from .models import Comment, Follow, Group, Post
 
 User = get_user_model()
 
