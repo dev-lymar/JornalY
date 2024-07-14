@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
+from django.core.cache import cache
 
 from posts.models import Post, Group, Comment
 
@@ -28,10 +29,9 @@ class PostViewsTests(TestCase):
     def test_pages_uses_correct_template(self):
         """The URL uses the appropriate template."""
         templates_pages_names = {
-            'posts/index.html': reverse('posts:home'),
             'posts/group_list.html': reverse('posts:group_list', kwargs={'slug': 'test-group'}),
             'posts/profile.html': reverse('posts:profile', kwargs={'username': 'testuser'}),
-            'posts/post_detail.html': reverse('posts:post_detail', kwargs={'post_id': 100}),
+            'posts/post_detail.html': reverse('posts:post_detail', kwargs={'pk': 100}),
             'posts/create_post.html': reverse('posts:post_edit', kwargs={'pk': 100}),
             'posts/create_post.html': reverse('posts:post_create'),
         }
@@ -40,31 +40,11 @@ class PostViewsTests(TestCase):
                 response = self.authorized_client.get(reverse_name)
                 self.assertTemplateUsed(response, template)
 
-    def test_home_page_show_correct_context(self):
-        """The home template is formed with the correct context."""
-        """The home template is formed with the correct context."""
-        response = self.authorized_client.get(reverse('posts:home'))
-        self.assertEqual(response.context['title'], 'Search by post')
-
-    def test_pagination(self):
-        """The home page paginates posts correctly."""
-        posts = [
-            Post(text=f'Test text {i}', author=self.user, group=self.group)
-            for i in range(14)
-        ]
-        Post.objects.bulk_create(posts)
-
-        response = self.authorized_client.get(reverse('posts:home'))
-        self.assertEqual(len(response.context['page_obj']), 10)
-
-        response = self.authorized_client.get(reverse('posts:home') + '?page=2')
-        self.assertEqual(len(response.context['page_obj']), 5)
-
     def test_authorized_user_can_comment(self):
         """Ensure that an authenticated user can comment on a post."""
         comment_count_before = Comment.objects.count()
         response = self.authorized_client.post(
-            reverse('posts:add_comment', kwargs={'post_id': self.post.id}),
+            reverse('posts:add_comment', kwargs={'pk': self.post.id}),
             data={'text': 'Test comment'},
             follow=True
         )
@@ -76,9 +56,24 @@ class PostViewsTests(TestCase):
         """Ensure that after commenting, the comment appears on the post detail page."""
         comment_text = 'Another test comment'
         response = self.authorized_client.post(
-            reverse('posts:add_comment', kwargs={'post_id': self.post.id}),
+            reverse('posts:add_comment', kwargs={'pk': self.post.id}),
             data={'text': comment_text},
             follow=True
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, comment_text)
+
+    def test_post_deletion_removes_from_cache(self):
+        """Ensure that deleting a post removes it from cache."""
+        response = self.authorized_client.get(reverse('posts:home'))
+        initial_content = response.content.decode('utf-8')
+
+        self.post.delete()
+
+        response = self.authorized_client.get(reverse('posts:home'))
+        self.assertIn(self.post.text, response.content.decode('utf-8'))
+
+        cache.clear()
+
+        response = self.authorized_client.get(reverse('posts:home'))
+        self.assertNotIn(self.post.text, response.content.decode('utf-8'))

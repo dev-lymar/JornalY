@@ -42,7 +42,7 @@ class StaticURLTests(TestCase):
 
     def test_post_page(self):
         """Checking if the post page is available."""
-        response = self.guest_client.get(reverse('posts:post_detail', kwargs={'post_id': 100}))
+        response = self.guest_client.get(reverse('posts:post_detail', kwargs={'pk': 100}))
         self.assertEqual(response.status_code, 200)
 
     def test_post_edit_page_only_for_author(self):

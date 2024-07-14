@@ -24,7 +24,7 @@
       <img class="card-img my-2" src="{{ im.url }}">
     {% endthumbnail %}
 
-    <a href="{% url 'posts:post_detail' post_id=post.id %}">Detailed information</a>
+    <a href="{% url 'posts:post_detail' pk=post.id %}">Detailed information</a>
     {% if post.group %}
       <a href="{% url 'posts:group_list' slug=post.group.slug %}">All group posts</a>
     {% endif %}
@@ -35,34 +35,4 @@
 {% include 'includes/paginator.html' %}
 
   </div>
-<!--  <main>-->
-<!--    <div class="container">-->
-<!--    <h1>Search by post</h1>-->
-
-<!--    <div class="card">-->
-<!--      <div class="card-body">-->
-
-<!--        <form class="form-inline" action="/">-->
-<!--          <div class="form-row">-->
-<!--            <input name="q" class="form-control form-control-lg" type="search"-->
-<!--              placeholder="Search" {% if keyword %}value="{{ keyword }}"{% endif %}>-->
-<!--            <button class="btn" type="submit">Search</button>-->
-<!--          </div>-->
-<!--        </form>-->
-<!--      </div>-->
-<!--    </div>-->
-
-<!--      <div class="container">-->
-<!--        {% for post in posts %}-->
-<!--          <strong>-->
-<!--              Автор: {{ post.author.get_full_name }},-->
-<!--              Дата публикации: {{ post.pub_date|date:"d M Y" }},-->
-<!--              Группа: {{ post.group.title }}-->
-<!--          </strong>-->
-<!--        <p>{{ post.text|linebreaksbr }}</p>-->
-<!--        <hr>-->
-<!--        {% endfor %}-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </main>-->
 {% endblock %}
